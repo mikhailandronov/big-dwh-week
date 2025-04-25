@@ -17,15 +17,6 @@ public class Main {
         public boolean intersects(Set<Frame> comparedSet) {
             return comparedSet.stream().anyMatch(this::intersects);
         }
-
-        @Override
-        public String toString() {
-            return "Frame{" +
-                    "start=" + start +
-                    ", len=" + len +
-                    ", cluster=" + cluster +
-                    '}';
-        }
     }
 
     public static void main(String[] args) throws IOException {
@@ -44,18 +35,24 @@ public class Main {
         Set<Frame> selectedFrames = new HashSet<>();
         long totalLength = 0;
 
-        clusterFrames.sort(Comparator.comparingInt(Frame::len));
+        clusterFrames.sort(
+                Comparator
+                        .comparingInt(Frame::len)
+                        .thenComparing(
+                                Comparator.comparingInt(Frame::start).reversed()
+                        )
+        );
 
         for (Frame frame : clusterFrames) {
             if (frame.intersects(selectedFrames)) {
-                if (frame.len() > totalLength) {
+                if (frame.len > totalLength) {
                     selectedFrames.clear();
                     selectedFrames.add(frame);
-                    totalLength = frame.len();
+                    totalLength = frame.len;
                 }
             } else {
                 selectedFrames.add(frame);
-                totalLength += frame.len();
+                totalLength += frame.len;
             }
         }
 
@@ -63,7 +60,7 @@ public class Main {
 
         String resultClusters = selectedFrames.stream()
                 .sorted(Comparator.comparingInt(Frame::cluster))
-                .map(frame -> String.valueOf(frame.cluster()))
+                .map(frame -> String.valueOf(frame.cluster))
                 .collect(Collectors.joining(" "));
 
         System.out.println(resultClusters);

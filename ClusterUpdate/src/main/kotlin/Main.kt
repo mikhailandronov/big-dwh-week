@@ -10,7 +10,11 @@ fun main() {
     val selectedFrames: MutableSet<Frame> = mutableSetOf()
     var totalLength = 0
 
-    clusterFrames.sortBy { it.len }
+    clusterFrames.sortWith(compareByDescending<Frame> { it.len }.thenByDescending { it.start })
+    //clusterFrames.sortBy { it.len }
+    println("---")
+    clusterFrames.forEach { println("#${it.cluster}, s:${it.start}, l:${it.len}") }
+    println("---")
     clusterFrames.forEach { frame ->
         if (frame.intersects(selectedFrames)) {
             if (frame.len > totalLength) {
